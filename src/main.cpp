@@ -69,26 +69,29 @@ int main()
     //定义三角形顶点数组
     float vertices[] = 
     {
-        0.5f, 0.5f,0.0f,
-        0.5f, -0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f,
-        -0.5f, 0.5f, 0.0f
+        0.0f, 0.5f,0.0f,  1.0f, 0.0f, 0.0f,
+        0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f 
+        
     };
 
     //定义索引EBO
+    /*
     unsigned int indices[] = 
     {
         0, 1, 3,
         1, 2, 3
     };
-
+    */
     
     //创建顶点缓冲对象，配置顶点属性
     //-----------------------------------------------------
-    unsigned int VBO, VAO, EBO;
+    unsigned int VBO, VAO;
+    //unsigned int EBO;
     glGenBuffers(1, &VBO);//函数生成一个VBO缓冲对象，并将其ID传递到第二个参数的地址上
     glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &EBO);//创建EBO缓冲对象
+    
+    //glGenBuffers(1, &EBO);创建EBO缓冲对象
     
     
     glBindVertexArray(VAO);//绑定VAO，即将该VAO设定为上下文活动的VAO
@@ -97,15 +100,20 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     //把之前定义的数组复制到缓冲的内存里
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
+    
+    /*
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    //告诉Opengl如何解析顶点数据，应用到逐个点属性上
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    */
+    
+    //告诉Opengl如何解析顶点数据，应用到逐个点属性上,最后一个参数为起始偏移量
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     //以顶点属性位置作为参数，启用顶点属性
     glEnableVertexAttribArray(0);
 
+    //颜色属性
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
     
     //渲染循环
     //-------------------------------------------------------
@@ -122,17 +130,20 @@ int main()
         glUseProgram(shaderProgram);
         
         //更新uniform
+        /*
         double time_value = glfwGetTime();
         float green_value = sin(time_value)/2.0f + 0.5f;
-        //查询uniform变量ourcolor的位置，参数还要提供着色器程序
+        
+        查询uniform变量ourcolor的位置，参数还要提供着色器程序
         int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-        //注：查询uniform位置不需要使用过着色器程序，但是更新之前必须先使用
-        //因为他是在当前激活的着色器程序中设置的uniform
-        //设置uniform值
+        注：查询uniform位置不需要使用过着色器程序，但是更新之前必须先使用
+        因为他是在当前激活的着色器程序中设置的uniform
+        设置uniform值
         glUniform4f(vertexColorLocation, 0.0f, green_value, 0.0f, 1.0f);
+        */
 
         glBindVertexArray(VAO);//确保绑定
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);//解绑
 
         //检查并调用事件，交换缓冲
