@@ -115,16 +115,21 @@ int main()
         processInput_escape(window);
         
         //渲染指令
-        glClearColor(0.184f, 0.31f, 0.31f, 1.0f);//状态设置函数，用来设置清空屏幕所用的颜色
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);//状态设置函数，用来设置清空屏幕所用的颜色
         glClear(GL_COLOR_BUFFER_BIT);//状态使用函数，清除color缓冲
 
-        //更新uniform
-        float time_value = glfwGetTime();
-        float green_value = (sin(time_value)/2.0f) + 0.5f;
-        
-        int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourcolor");
-
+        //激活着色器程序
         glUseProgram(shaderProgram);
+        
+        //更新uniform
+        double time_value = glfwGetTime();
+        float green_value = sin(time_value)/2.0f + 0.5f;
+        //查询uniform变量ourcolor的位置，参数还要提供着色器程序
+        int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+        //注：查询uniform位置不需要使用过着色器程序，但是更新之前必须先使用
+        //因为他是在当前激活的着色器程序中设置的uniform
+        //设置uniform值
+        glUniform4f(vertexColorLocation, 0.0f, green_value, 0.0f, 1.0f);
 
         glBindVertexArray(VAO);//确保绑定
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
