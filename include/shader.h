@@ -39,7 +39,31 @@ public:
     void setFloat(const std::string &name, float value) const
     { 
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value); 
-    } 
+    }
+private:
+    void checkCompileErrors(unsigned int shader, std::string type)
+    {
+        int success;
+        char infoLog[1024];
+        if (type != "PROGRAM")
+        {
+            glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+            if (!success)
+            {
+                glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+                std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+            }
+        }
+        else
+        {
+            glGetProgramiv(shader, GL_LINK_STATUS, &success);
+            if (!success)
+            {
+                glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+                std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+            }
+        }
+    }
 };
 
 Shader::Shader(const char *vertexPath, const char *fragmentPath)
@@ -85,24 +109,14 @@ Shader::Shader(const char *vertexPath, const char *fragmentPath)
     glShaderSource(vertex, 1, &vShaderCode, NULL);
     glCompileShader(vertex);
     //如果出错，打印错误
-    glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
-    if(!success)
-    {
-        glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-        std::cout <<"ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" <<infoLog <<std::endl;
-    }
+    checkCompileErrors(vertex, "VERTEX");
 
     //片段着色器
     fragment = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment, 1, &fShaderCode, NULL);
     glCompileShader(fragment);
     //如果出错，打印错误
-    glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
-    if(!success)
-    {
-        glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-        std::cout <<"ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" <<infoLog <<std::endl;
-    }
+    checkCompileErrors(fragment, "FRAGMENT");
 
     //着色器程序
     ID = glCreateProgram();
@@ -122,55 +136,5 @@ Shader::Shader(const char *vertexPath, const char *fragmentPath)
     glDeleteShader(fragment);
 } 
 
-
-
-//着色器源码
-//------------------------------------------------------------------
-//顶点着色器
-const char *vertexShaderSource = 
-    "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "layout (location = 1) in vec3 aColor;\n"
-    "out vec3 ourColor;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos, 1.0);\n"
-    "   ourColor = aColor;\n"
-    "}\0";
-
-//片段着色器
-const char *fragmentShaderSource =
-    "#version 330 core\n"
-    "in vec3 ourColor;\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(ourColor, 1.0);\n"
-    "}\0";
-
 #endif
-=======
-//着色器源码
-//------------------------------------------------------------------
-//顶点着色器
-const char *vertexShaderSource = 
-    "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "layout (location = 1) in vec3 aColor;\n"
-    "out vec3 ourColor;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos, 1.0);\n"
-    "   ourColor = aColor;\n"
-    "}\0";
 
-//片段着色器
-const char *fragmentShaderSource =
-    "#version 330 core\n"
-    "in vec3 ourColor;\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(ourColor, 1.0);\n"
-    "}\0";
->>>>>>> 5fb659f14fb16fe2750f5ff24fb882d5a17a7077

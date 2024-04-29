@@ -1,12 +1,12 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "my.h"
 #include "shader.h"
 
 #include <iostream>
-#include <cmath>
 
-//用户改变窗口的时候视口应当同时调整，注册一个回调函数在每次窗口大小被调整的时候被调用
+void init_glfw();
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void processInput_escape(GLFWwindow *window);
 
 int main()
 {
@@ -17,14 +17,12 @@ int main()
     //然后返回这个结构体的指针，将指针赋值给window指针）
     GLFWwindow *window = glfwCreateWindow(1600, 900, "Vulightan", NULL, NULL);
     
-    /*
     if (window == NULL)
     {
         std::cout <<"Failed to create GLFW window" <<std::endl;
         glfwTerminate();
         return -1;
     }
-    */
     
     //通知GLFW将窗口设置为当前线程的主上下文
     glfwMakeContextCurrent(window);
@@ -37,33 +35,9 @@ int main()
         return -1;
     }
     
-    //设置视口的维度
-    glViewport(0, 0, 1600, 900);
-    
     //配置着色器
     //-------------------------------------------------------
-    //着色器类型以参数形式入参，函数创建对应的着色器对象，并返回其ID（引用）
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    //把着色器源码附加到着色器对象上（1表示传递源码字符串数量）
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    //编译顶点着色器
-    glCompileShader(vertexShader);
-
-    //配置片段着色器并编译
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-
-    //创建着色器程序对象链接两个着色器对象
-    unsigned int shaderProgram;
-    shaderProgram = setShaderProgram(vertexShader, fragmentShader);
-
-    //删除着色器对象
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
+    Shader ourShader("3.3.vertexshader.vs", "3.3.fragmentshader.fs");
     //配置物体
     //-------------------------------------------------------
     //定义三角形顶点数组
@@ -127,7 +101,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);//状态使用函数，清除color缓冲
 
         //激活着色器程序
-        glUseProgram(shaderProgram);
+        ourShader.use();
         
         //更新uniform
         /*
@@ -155,5 +129,30 @@ int main()
     glfwTerminate();
     
     return 0;
+}
+
+void init_glfw()
+{
+    //初始化glfw，使用核心模式
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);//使用OpenGL3.3版本
+    glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
+    
+}
+
+//回调函数用来在用户改变窗口的大小时刷新视口大小
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+
+//处理escape输入
+void processInput_escape(GLFWwindow *window)
+{
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(window, true);
+    }
 }
 
