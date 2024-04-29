@@ -12,20 +12,6 @@ void init_glfw()
     
 }
 
-//创建着色器程序对象，链接两个着色器并返回ID
-unsigned int  setShaderProgram(unsigned int a_Shader, unsigned int b_Shader)
-{
-    //创建着色器程序，以链接各个着色器
-    unsigned int ID;
-    ID  = glCreateProgram();//创建程序对象，返回其ID
-    //将之前编译的着色器附加到程序对象上
-    glAttachShader(ID, a_Shader);
-    glAttachShader(ID, b_Shader);
-    glLinkProgram(ID);//链接各个着色器，顺序不影响
-
-    return ID;
-}
-
 //回调函数用来在用户改变窗口的大小时刷新视口大小
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
